@@ -122,15 +122,8 @@ let rec check_exhaustiveness_ env pos ty caselist enum_coming_from_unresolved =
     List.fold_left tyl ~init:env ~f:(fun env ty ->
         check_exhaustiveness_ env pos ty caselist new_enum)
   | Tintersection tyl ->
-    fst
-    @@ Typing_utils.run_on_intersection env tyl ~f:(fun env ty ->
-           ( check_exhaustiveness_
-               env
-               pos
-               ty
-               caselist
-               enum_coming_from_unresolved,
-             () ))
+    List.fold_left tyl ~init:env ~f:(fun env ty ->
+      check_exhaustiveness_ env pos ty caselist enum_coming_from_unresolved)
   | Tnewtype (name, args, _) ->
     apply_if_enum_or_enum_class env ~default:env ~f:check name args
   | Terr
